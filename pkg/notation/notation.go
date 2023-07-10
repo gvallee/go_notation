@@ -109,6 +109,49 @@ func ConvertStringRangesToIntSlice(str string) ([]int, error) {
 	return callIDs, nil
 }
 
+// ConvertStringRangesToStringSlice converts the notation of ranges into a slice of string.
+// For example, 001-004,009 becomes the slice []int{"001","002","003","004","009"}
+func ConvertStringRangesToStringSlice(str string) ([]string, error) {
+	var ids []string
+
+	tokens := strings.Split(str, ", ")
+	tokensNoSpace := strings.Split(str, ",")
+	if len(tokens) == 1 && len(tokensNoSpace) > 1 {
+		tokens = tokensNoSpace
+	}
+
+	for _, t := range tokens {
+		tokens2 := strings.Split(t, "-")
+		if len(tokens2) == 2 {
+			val1, err := strconv.Atoi(tokens2[0])
+			if err != nil {
+				return ids, err
+			}
+			val2, err := strconv.Atoi(tokens2[1])
+			if err != nil {
+				return ids, err
+			}
+
+			for num := val1; num <= val2; num++ {
+				switch len(tokens2[0]) {
+				case 1:
+					ids = append(ids, fmt.Sprintf("%d", num))
+				case 2:
+					ids = append(ids, fmt.Sprintf("%02d", num))
+				case 3:
+					ids = append(ids, fmt.Sprintf("%03d", num))
+				default:
+					return ids, fmt.Errorf("node number of composed of %d digits, we support a max of 3", len(tokens2[0]))
+				}
+			}
+		} else {
+			ids = append(ids, tokens2...)
+		}
+	}
+
+	return ids, nil
+}
+
 func IntSliceToString(s []int) string {
 	if len(s) == 0 {
 		return ""

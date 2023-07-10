@@ -29,7 +29,7 @@ func TestCompressIntArray(t *testing.T) {
 	}
 }
 
-func TestConvertCompressedCallListToIntSlice(t *testing.T) {
+func TestConvertStringRangesToIntSlice(t *testing.T) {
 	tests := []struct {
 		input         string
 		expectedArray []int
@@ -45,12 +45,12 @@ func TestConvertCompressedCallListToIntSlice(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		array, err := ConvertCompressedCallListToIntSlice(tt.input)
+		array, err := ConvertStringRangesToIntSlice(tt.input)
 		if err != nil {
-			t.Fatalf("ConvertCompressedCallListToIntSlice() failed: %s", err)
+			t.Fatalf("ConvertStringRangesToIntSlice() failed: %s", err)
 		}
 		if len(array) != len(tt.expectedArray) {
-			t.Fatalf("ConvertCompressedCallListToIntSlice() returned %d elements instead of %d", len(array), len(tt.expectedArray))
+			t.Fatalf("ConvertStringRangesToIntSlice() returned %d elements instead of %d", len(array), len(tt.expectedArray))
 		}
 		for i := 0; i < len(tt.expectedArray); i++ {
 			if array[i] != tt.expectedArray[i] {
@@ -60,7 +60,42 @@ func TestConvertCompressedCallListToIntSlice(t *testing.T) {
 	}
 }
 
-func TestGetNumberOfRanksFromCompressedNotation(t *testing.T) {
+func TestConvertStringRangesToStringSlice(t *testing.T) {
+	tests := []struct {
+		input         string
+		expectedArray []string
+	}{
+		{
+			input:         "32",
+			expectedArray: []string{"32"},
+		},
+		{
+			input:         "32-35,40",
+			expectedArray: []string{"32", "33", "34", "35", "40"},
+		},
+		{
+			input:         "032-035,040",
+			expectedArray: []string{"032", "033", "034", "035", "040"},
+		},
+	}
+
+	for _, tt := range tests {
+		array, err := ConvertStringRangesToStringSlice(tt.input)
+		if err != nil {
+			t.Fatalf("ConvertStringRangesToStringSlice() failed: %s", err)
+		}
+		if len(array) != len(tt.expectedArray) {
+			t.Fatalf("ConvertStringRangesToStringSlice() returned %d elements instead of %d", len(array), len(tt.expectedArray))
+		}
+		for i := 0; i < len(tt.expectedArray); i++ {
+			if array[i] != tt.expectedArray[i] {
+				t.Fatalf("element %d of the array is %s instead of %s", i, array[i], tt.expectedArray[i])
+			}
+		}
+	}
+}
+
+func TestGetNumberOfEltsFromCompressedNotation(t *testing.T) {
 	tests := []struct {
 		input          string
 		expectedOutput int
@@ -91,7 +126,7 @@ func TestGetNumberOfRanksFromCompressedNotation(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		n, err := GetNumberOfRanksFromCompressedNotation(tt.input)
+		n, err := GetNumberOfEltsFromCompressedNotation(tt.input)
 		if err != nil {
 			t.Fatalf("GetNumberOfRanksFromCompressedNotation() failed: %s", err)
 		}
